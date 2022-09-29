@@ -6,7 +6,7 @@ import {
   Delete,
   Param,
   Body,
-  // HttpCode,
+  HttpCode,
 } from '@nestjs/common';
 import { ReportType } from './data';
 import { AppService } from './app.service';
@@ -50,11 +50,9 @@ export class AppController {
     return this.appService.putReport(body, id);
   }
 
-  // @HttpCode(204)
+  @HttpCode(204)
   @Delete(':id')
   deleteReport(@Param('id') id: string) {
     return this.appService.deleteReport(id);
   }
 }
-
-//1:23
