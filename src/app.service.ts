@@ -1,20 +1,28 @@
 import { data, ReportType } from './data';
 import { v4 as uuid } from 'uuid';
 import { Injectable } from '@nestjs/common/decorators';
+import { ReportResponseDto } from './dtos/report.dto';
 
 @Injectable()
 export class AppService {
-  getAllReports(reportType: ReportType) {
-    return data.report.filter((report) => report.type === reportType);
-  }
-
-  getReportById(reportType: ReportType, id: string) {
+  getAllReports(reportType: ReportType): ReportResponseDto[] {
     return data.report
-      .filter((report) => report.type === reportType && report.id === id)
-      .find((report) => report.id === id);
+      .filter((report) => report.type === reportType)
+      .map((report) => new ReportResponseDto(report));
   }
 
-  postReport(reportType: ReportType, body: { source: string; amount: number }) {
+  getReportById(reportType: ReportType, id: string): ReportResponseDto {
+    return new ReportResponseDto(
+      data.report
+        .filter((report) => report.type === reportType && report.id === id)
+        .find((report) => report.id === id),
+    );
+  }
+
+  postReport(
+    reportType: ReportType,
+    body: { source: string; amount: number },
+  ): ReportResponseDto {
     const newReport = {
       id: uuid(),
       source: body.source,
@@ -26,23 +34,26 @@ export class AppService {
 
     data.report.push(newReport);
 
-    return newReport;
+    return new ReportResponseDto(newReport);
   }
 
-  putReport(body: { source?: string; amount?: number }, id: string) {
+  putReport(
+    body: { source?: string; amount?: number },
+    id: string,
+  ): ReportResponseDto {
     const reportToUpdate = data.report.find((report) => report.id === id);
     const update = Object.assign(reportToUpdate, body);
 
     data.report.splice(data.report.indexOf(reportToUpdate), 1, update);
 
-    return update;
+    return new ReportResponseDto(update);
   }
 
-  deleteReport(id: string) {
+  deleteReport(id: string): ReportResponseDto {
     const reportToDelete = data.report.find((report) => report.id === id);
 
     data.report.splice(data.report.indexOf(reportToDelete), 1);
 
-    return reportToDelete;
+    return new ReportResponseDto(reportToDelete);
   }
 }
